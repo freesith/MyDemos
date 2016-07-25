@@ -11,7 +11,6 @@ import com.example.mvpdemo.R;
 import com.example.mvpdemo.adapter.BaseRecyclerAdapter;
 import com.example.mvpdemo.holder.BHolder;
 import com.example.mvpdemo.holder.BaseRecyclerViewHolder;
-import com.example.mvpdemo.ipresenter.IRequestPresenter;
 import com.example.mvpdemo.model.ListResponse;
 import com.example.mvpdemo.model.UserInfo;
 import com.example.mvpdemo.presenter.BaseRecyclerViewPresenter;

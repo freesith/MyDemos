@@ -5,7 +5,9 @@ import android.content.Context;
 import android.os.Build;
 import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -21,9 +23,9 @@ public class BubbleContainer extends FrameLayout {
 
     private List<BubbleView> mViewList = new ArrayList<>();
 
-    private static final int FORCE = 100;
+    private static final int FORCE = 0;
 
-    private static final float GRAVITY = (float) 0.01;
+    private static final float GRAVITY = (float) 30;
 
 
     public BubbleContainer(Context context) {
@@ -49,7 +51,7 @@ public class BubbleContainer extends FrameLayout {
             BubbleView bubbleView = new BubbleView(getContext());
             bubbleView.setLocationX(event.getX());
             bubbleView.setLocationY(event.getY());
-
+            bubbleView.setVelocityX(80);
             ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(200,200);
 
             addView(bubbleView,params);
@@ -61,6 +63,8 @@ public class BubbleContainer extends FrameLayout {
 
     private void layoutBubble() {
 
+        checkKnock();
+
         for (BubbleView view: mViewList) {
 
             float dy = getMeasuredHeight() / 2 - view.getLocationY();
@@ -68,8 +72,14 @@ public class BubbleContainer extends FrameLayout {
 
             float l = (float) Math.pow(dx * dx + dy * dy, 0.5);
 
-            view.setForceX((float) ((Math.max(GRAVITY * l , 0)) * dx / l) + view.getVelocityX() > 0 ? -FORCE * dx /l : view.getVelocityX() ==0 ? 0 : FORCE * dx / l );
-            view.setForceY((float) ((Math.max(GRAVITY * l , 0)) * dy / l) + view.getVelocityY() > 0 ? -FORCE * dy /l : view.getVelocityY() ==0 ? 0 : FORCE * dy / l );
+            float velocityX = view.getVelocityX();
+            float velocityY = view.getVelocityY();
+
+
+//            Log.i("BubbleContainer","layoutBubble vx = " + velocityX + "     vy = " + velocityY);
+
+            view.setForceX( GRAVITY  * dx / l + (velocityX > 0 ? -FORCE * velocityX * velocityX  : view.getVelocityX() ==0 ? 0 : FORCE* velocityX * velocityX));
+            view.setForceY( GRAVITY  * dy / l + (velocityY > 0 ? -FORCE * velocityY * velocityY  : view.getVelocityY() ==0 ? 0 : FORCE* velocityY * velocityY));
 
             view.move(SystemClock.elapsedRealtime());
         }
@@ -80,5 +90,39 @@ public class BubbleContainer extends FrameLayout {
                 layoutBubble();
             }
         },20);
+    }
+
+
+    private double getDistance(BubbleView a, BubbleView b) {
+
+        float dx = a.getLocationX() - b.getLocationX();
+        float dy = a.getLocationY() - b.getLocationY();
+
+        return Math.pow(dx * dx + dy * dy, 0.5);
+    }
+
+    private void checkKnock() {
+        int count = getChildCount();
+        for (int i = 0; i< count; i++) {
+            for (int j = i +1; j < count; j ++) {
+                BubbleView a = (BubbleView) getChildAt(i);
+                BubbleView b = (BubbleView) getChildAt(j);
+
+                if (getDistance(a,b) <= a.getR() + b.getR()) {
+
+                    float velocityX = a.getVelocityX();
+                    float velocityY = a.getVelocityY();
+
+                    a.setVelocityX(b.getVelocityX());
+                    a.setVelocityY(b.getVelocityY());
+
+                    b.setVelocityX(velocityX);
+                    b.setVelocityY(velocityY);
+
+                    a.move(SystemClock.elapsedRealtime());
+                    b.move(SystemClock.elapsedRealtime());
+                }
+            }
+        }
     }
 }

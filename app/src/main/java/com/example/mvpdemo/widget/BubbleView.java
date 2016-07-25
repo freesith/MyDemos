@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import java.util.List;
@@ -40,6 +41,7 @@ public class BubbleView extends View {
     private float forceY;
 
     private Paint mPaint;
+
     private Random mRandom;
 
     public BubbleView(Context context) {
@@ -132,14 +134,26 @@ public class BubbleView extends View {
 
     public void move(long time) {
 
+        long dt = time - lastTime;
+//        Log.i("BubbleView","move   dt = " + dt + "   forceX = " + forceX + "     forceY = " + forceY + "       vx = " + velocityX + "       vy = " + velocityY);
+
         if (lastTime == 0) {
             lastTime = time;
         } else {
-            locationX += (time - lastTime) / 1000 * velocityX;
-            locationY += (time - lastTime) / 1000 * velocityY;
 
-            velocityX += (time - lastTime) / 1000 * forceX / 1;
-            velocityY += (time - lastTime) / 1000 * forceY / 1;
+            float dlx = (float)dt / 1000 * velocityX;
+            float dly = (float)dt / 1000 * velocityY;
+            float dvx = (float) dt / 1000 * forceX;
+            float dvy = (float) dt / 1000 * forceY;
+
+//            Log.i("BubbleView","move    dlx = " + dlx + "   dly = " + dly + "   dvx = " + dvx + "   dvy = " + dvy);
+            locationX += dlx;
+            locationY += dly;
+
+            velocityX += dvx;
+            velocityY += dvy;
+
+            lastTime = time;
         }
 
         setTranslationX(locationX - r);
