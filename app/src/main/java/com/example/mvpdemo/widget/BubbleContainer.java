@@ -68,8 +68,8 @@ public class BubbleContainer extends FrameLayout {
 
             float l = (float) Math.pow(dx * dx + dy * dy, 0.5);
 
-            view.setForceX((float) ((Math.max(GRAVITY * l /*- FORCE*/, 0)) * dx / l));
-            view.setForceY((float) ((Math.max(GRAVITY * l/* - FORCE*/, 0)) * dy / l));
+            view.setForceX((float) ((Math.max(GRAVITY * l , 0)) * dx / l) + view.getVelocityX() > 0 ? -FORCE * dx /l : view.getVelocityX() ==0 ? 0 : FORCE * dx / l );
+            view.setForceY((float) ((Math.max(GRAVITY * l , 0)) * dy / l) + view.getVelocityY() > 0 ? -FORCE * dy /l : view.getVelocityY() ==0 ? 0 : FORCE * dy / l );
 
             view.move(SystemClock.elapsedRealtime());
         }
