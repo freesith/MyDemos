@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <objectAnimator
+        android:duration="500"
+        android:repeatMode="restart"
+        android:propertyName="pathData"
+        android:valueTo="M 39 76 L 35 80 L 5 50 L 9 46z"
+        android:valueFrom="M 45 10 L 55 10 L 55 90 L 45 90 z"
+        android:valueType="pathType"
+        />
+
+    <objectAnimator
+        android:repeatMode="restart"
+        android:duration="500"
+        android:propertyName="fillColor"
+        android:valueTo="#ffffff"
+        android:valueFrom="#0000ff"
+        android:valueType="colorType"
+        />
+
+</set>

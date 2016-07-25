@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+          android:width="100dip"
+        android:height="100dip"
+        android:viewportWidth="100"
+        android:viewportHeight="100"
+    >
+
+    <path android:name="ver"
+        android:fillColor="#ffffff"
+          android:pathData="M 39 76 L 35 80 L 5 50 L 9 46z"
+        />
+
+    <path android:name="hori"
+        android:fillColor="#ffffff"
+          android:pathData="M 91 16 L 95 20 L 35 80 L 31 76 z"
+        />
+
+
+
+</vector>

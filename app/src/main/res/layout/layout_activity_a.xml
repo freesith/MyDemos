@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <com.example.mvpdemo.widget.ColourChipView
+        android:id="@+id/color"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></com.example.mvpdemo.widget.ColourChipView>
+
+    <TextView
+        android:visibility="gone"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:id="@+id/text"
+        android:background="#f2f2f2"
+        android:layout_marginTop="30dip"
+        android:layout_width="100dip"
+        android:layout_height="40dip"/>
+
+    <ProgressBar
+        android:layout_marginTop="10dip"
+        android:layout_gravity="center_horizontal"
+        android:visibility="invisible"
+        android:id="@+id/progress"
+        android:layout_width="30dip"
+        android:layout_height="30dip"/>
+
+    <TextView
+        android:id="@+id/button"
+        android:text="按钮"
+        android:gravity="center"
+        android:padding="10dip"
+        android:background="#f2f2f2"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dip"
+        android:layout_width="100dip"
+        android:layout_height="40dip"/>
+
+    <LinearLayout
+        android:id="@+id/layout"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <View
+            android:layout_margin="10dip"
+            android:background="#0000ff"
+            android:layout_width="30dip"
+            android:layout_height="30dip"/>
+
+        <View
+            android:layout_margin="10dip"
+            android:background="#0000ff"
+            android:layout_width="30dip"
+            android:layout_height="30dip"/>
+
+        <View
+            android:layout_margin="10dip"
+            android:background="#0000ff"
+            android:layout_width="30dip"
+            android:layout_height="30dip"/>
+
+        <View
+            android:layout_margin="10dip"
+            android:background="#0000ff"
+            android:layout_width="30dip"
+            android:layout_height="30dip"/>
+
+        <View
+            android:layout_margin="10dip"
+            android:background="#0000ff"
+            android:layout_width="30dip"
+            android:layout_height="30dip"/>
+
+        <View
+            android:layout_margin="10dip"
+            android:background="#0000ff"
+            android:layout_width="30dip"
+            android:layout_height="30dip"/>
+
+
+    </LinearLayout>
+
+</FrameLayout>
