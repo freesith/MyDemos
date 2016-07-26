@@ -22,7 +22,7 @@ public class BubbleView extends View {
 
     private static final int SELECT_RADIUS = 200;   //选中半径
 
-    private static final int FORCE = 100;
+    private static final int FORCE = 20;   //固定的摩擦力
 
     private int r = NORMAL_RADIUS; // 当前半径
 
@@ -116,6 +116,10 @@ public class BubbleView extends View {
         return r;
     }
 
+    public int getWeight() {
+        return r / 100 * r / 100;
+    }
+
     public float getVelocityX() {
         return velocityX;
     }
@@ -134,17 +138,27 @@ public class BubbleView extends View {
 
     public void move(long time) {
 
-        long dt = time - lastTime;
+        float dt = (float)(time - lastTime) / 1000;
 //        Log.i("BubbleView","move   dt = " + dt + "   forceX = " + forceX + "     forceY = " + forceY + "       vx = " + velocityX + "       vy = " + velocityY);
 
         if (lastTime == 0) {
             lastTime = time;
         } else {
 
-            float dlx = (float)dt / 1000 * velocityX;
-            float dly = (float)dt / 1000 * velocityY;
-            float dvx = (float) dt / 1000 * forceX;
-            float dvy = (float) dt / 1000 * forceY;
+//            double velocity = Math.sqrt(velocityX * velocityX + velocityY * velocityY); //运动放心的合速度
+
+//            double fx = FORCE * Math.abs(velocityX) / velocity; //横向摩擦力绝对值
+//            double fy = FORCE * Math.abs(velocityY) / velocity; //纵向摩擦力绝对值
+
+            float weight = r / 100 * r / 100;
+
+            float dvx = (float) dt * forceX /*/ weight*/;
+            float dvy = (float) dt * forceY /*/ weight*/;
+
+            //v0t + 1/2at^2
+            float dlx = (float)(dt * velocityX/* + 0.5 * forceX / weight * dt * dt*/);
+            float dly = (float)(dt * velocityY/* + 0.5 * forceY / weight * dt * dt*/);
+
 
 //            Log.i("BubbleView","move    dlx = " + dlx + "   dly = " + dly + "   dvx = " + dvx + "   dvy = " + dvy);
             locationX += dlx;
@@ -154,6 +168,7 @@ public class BubbleView extends View {
             velocityY += dvy;
 
             lastTime = time;
+
         }
 
         setTranslationX(locationX - r);
