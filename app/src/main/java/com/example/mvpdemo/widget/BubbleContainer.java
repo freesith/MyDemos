@@ -162,6 +162,8 @@ public class BubbleContainer extends FrameLayout {
                     double vb1 = b.getVelocityX() * cosBeta + b.getVelocityY() * sinBeta;
                     double vb2 = b.getVelocityX() * sinBeta + b.getVelocityY() * cosBeta;
 
+                    Log.i("xx","va1 = " + va1 + "   va2 = " + va2 + "   vb1 = " + vb1 + "   vb2 = " + vb2);
+
                     double _va1 = va1 - b.getWeight() * (1 + LOSS) / (b.getWeight() + a.getWeight()) * (vb1 - va1); //碰撞后a连线方向的速度
                     _va1 = ((1 + LOSS) * b.getWeight() * vb1 + a.getWeight() * va1 - b.getWeight() * LOSS * va1) / (a.getWeight()  + b.getWeight());
                     double _va2 = va2;
@@ -169,6 +171,8 @@ public class BubbleContainer extends FrameLayout {
                     double _vb1 = vb1 - a.getWeight() * (1 + LOSS) / (b.getWeight() + a.getWeight()) * (va1 - vb1);
                     _vb1 = ((1 + LOSS) * a.getWeight() * va1 + b.getWeight() * vb1 - a.getWeight() * LOSS * vb1) / (a.getWeight()  + b.getWeight());
                     double _vb2 = vb2;
+
+                    Log.i("xx","_va1 = " + _va1 + "     _va2 = " + _va2 + "     _vb1 = " + _vb1 + "     _vb2 = " + _vb2);
 
                     float vax = (float) (_va1 * cosAlpha + _va2 * sinAlpha);
                     float vay = (float) (_va1 * sinAlpha + _va2 * cosAlpha);
