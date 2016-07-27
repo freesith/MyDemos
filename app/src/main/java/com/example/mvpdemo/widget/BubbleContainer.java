@@ -29,6 +29,8 @@ public class BubbleContainer extends FrameLayout {
 
     private static final float GRAVITY = (float) 30;
 
+    private boolean knocked;
+
 
     public BubbleContainer(Context context) {
         super(context);
@@ -65,7 +67,10 @@ public class BubbleContainer extends FrameLayout {
 
     private void layoutBubble() {
 
-        checkKnock();
+
+        if ( !knocked) {
+            checkKnock();
+        }
 
         for (BubbleView view: mViewList) {
 
@@ -137,6 +142,7 @@ public class BubbleContainer extends FrameLayout {
                         && ((b.getLocationY() - a.getLocationY()) * (b.getVelocityY() - a.getVelocityY()) < 0 && Math.abs(a.getLocationX() - b.getLocationX()) <a.getR() + b.getR()
                             || b.getLocationX() - a.getLocationX() * (b.getVelocityX() - a.getVelocityX()) < 0 && Math.abs(a.getVelocityY() - b.getLocationY()) < a.getR() + b.getR())) {
 
+                    knocked = true;
                     long time = SystemClock.elapsedRealtime();
 
                     Log.i("xx","碰撞前 a 的vx = " + a.getVelocityX() + "    vy = " + a.getVelocityY() + "   a 的lx = " + a.getLocationX() + "    ly = " + a.getLocationY());
@@ -156,10 +162,12 @@ public class BubbleContainer extends FrameLayout {
                     double vb1 = b.getVelocityX() * cosBeta + b.getVelocityY() * sinBeta;
                     double vb2 = b.getVelocityX() * sinBeta + b.getVelocityY() * cosBeta;
 
-                    double _va1 = va1 - b.getWeight() * (1 + LOSS) / (b.getWeight() + a.getWeight()) * (va1 - vb1); //碰撞后a连线方向的速度
+                    double _va1 = va1 - b.getWeight() * (1 + LOSS) / (b.getWeight() + a.getWeight()) * (vb1 - va1); //碰撞后a连线方向的速度
+                    _va1 = ((1 + LOSS) * b.getWeight() * vb1 + a.getWeight() * va1 - b.getWeight() * LOSS * va1) / (a.getWeight()  + b.getWeight());
                     double _va2 = va2;
 
                     double _vb1 = vb1 - a.getWeight() * (1 + LOSS) / (b.getWeight() + a.getWeight()) * (va1 - vb1);
+                    _vb1 = ((1 + LOSS) * a.getWeight() * va1 + b.getWeight() * vb1 - a.getWeight() * LOSS * vb1) / (a.getWeight()  + b.getWeight());
                     double _vb2 = vb2;
 
                     float vax = (float) (_va1 * cosAlpha + _va2 * sinAlpha);
