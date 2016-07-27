@@ -178,7 +178,7 @@ public class BubbleContainer extends FrameLayout {
                     float vay = (float) (_va1 * sinAlpha + _va2 * cosAlpha);
 
                     float vbx = (float) (_vb1 * cosBeta + _vb2 * sinBeta);
-                    float vby = (float) (_vb1 * sinAlpha + _vb2 * cosBeta);
+                    float vby = (float) (_vb1 * sinBeta + _vb2 * cosBeta);
 
                     a.setVelocityX(vax);
                     a.setVelocityY(vay);
