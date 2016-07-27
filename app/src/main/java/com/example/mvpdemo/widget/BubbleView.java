@@ -44,6 +44,8 @@ public class BubbleView extends View {
 
     private Random mRandom;
 
+    private Velocity velocity;
+
     public BubbleView(Context context) {
         super(context);
         init();
@@ -66,6 +68,7 @@ public class BubbleView extends View {
         mRandom = new Random();
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setColor(Color.HSVToColor(new float[]{(float) (mRandom.nextInt(360)), (float) (mRandom.nextInt(80) / 100f), (float) ((mRandom.nextInt(30) + 70) / 100f)}));
+        velocity = new Velocity(0,0);
     }
 
     public void setLocationX(float locationX) {
@@ -78,10 +81,12 @@ public class BubbleView extends View {
 
     public void setVelocityX(float velocityX) {
         this.velocityX = velocityX;
+        velocity.x = velocityX;
     }
 
     public void setVelocityY(float velocityY) {
         this.velocityY = velocityY;
+        velocity.y = velocityY;
     }
 
     public long getLastTime() {
@@ -136,6 +141,16 @@ public class BubbleView extends View {
         this.forceY = forceY;
     }
 
+    public Velocity getVelocity() {
+        return velocity;
+    }
+
+    public void setVelocity(Velocity velocity) {
+        this.velocity = velocity;
+        this.velocityX = (float) velocity.x;
+        this.velocityY = (float) velocity.y;
+    }
+
     public void move(long time) {
 
         float dt = (float)(time - lastTime) / 1000;
@@ -166,6 +181,9 @@ public class BubbleView extends View {
 
             velocityX += dvx;
             velocityY += dvy;
+
+            velocity.x = velocityX;
+            velocity.y = velocityY;
 
             lastTime = time;
 
