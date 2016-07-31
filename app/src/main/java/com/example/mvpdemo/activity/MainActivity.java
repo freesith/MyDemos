@@ -6,11 +6,13 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.mvpdemo.R;
+import com.example.mvpdemo.widget.Velocity;
 
 import java.util.Date;
 
@@ -31,6 +33,20 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+
+//        Velocity a = new Velocity(3,5);
+//        Velocity b = new Velocity(10,4);
+//        Velocity b1 = b.merge(a.aMerge(b).multi((float) 1 / 2 * 2));
+//        Velocity a1 = a.aMerge(a.aMerge(b).multi( (float)1 / 2 * 2));
+//        Log.i("xx","a1 = " + a1 + "   b1 = " + b1);
+//
+//        Velocity aaMergeb = a.aMerge(b);
+//        Log.i("xx","aamerge = " + aaMergeb);
+//        b1 = b.merge(aaMergeb);
+//        Log.i("xx","b1 = " + b1);
+
+
     }
 
     @Override

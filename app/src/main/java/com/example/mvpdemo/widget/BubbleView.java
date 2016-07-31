@@ -1,5 +1,6 @@
 package com.example.mvpdemo.widget;
 
+import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -87,21 +88,6 @@ public class BubbleView extends View {
         velocity.y = velocityY;
     }
 
-    public long getLastTime() {
-        return lastTime;
-    }
-
-    public void setLastTime(long lastTime) {
-        this.lastTime = lastTime;
-    }
-
-    public float getForceX() {
-        return forceX;
-    }
-
-    public float getForceY() {
-        return forceY;
-    }
 
     public float getLocationX() {
         return locationX;
@@ -143,9 +129,6 @@ public class BubbleView extends View {
         return velocity;
     }
 
-    public void setVelocity(Velocity velocity) {
-        this.velocity = velocity;
-    }
 
     public void move(long time) {
 
@@ -182,13 +165,20 @@ public class BubbleView extends View {
 
         }
 
-        setTranslationX(locationX - r);
-        setTranslationY(locationY - r);
+        setTranslationX(locationX - getWidth() / 2);
+        setTranslationY(locationY - getHeight() / 2);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawCircle(r, r, r, mPaint);
+        canvas.drawCircle(getWidth() / 2, getHeight() / 2, r, mPaint);
     }
+
+    public void onSelect() {
+        r = SELECT_RADIUS;
+        ObjectAnimator.ofFloat(this,"scaleX",1,2).setDuration(200).start();
+        ObjectAnimator.ofFloat(this,"scaleY",1,2).setDuration(200).start();
+    }
+
 }
