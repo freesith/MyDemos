@@ -5,17 +5,31 @@ package com.example.mvpdemo.widget;
  */
 public class Velocity {
 
-    public double x;
-    public double y;
+    public float x;
+    public float y;
 
-    public Velocity(double x, double y) {
+    public Velocity(float x, float y) {
 
         this.x = x;
         this.y = y;
     }
 
+    public Velocity() {
 
-    public Velocity multi(double d) {
+    }
+
+    public static void merge(Velocity a, Velocity b, Velocity dst) {
+        dst.x = a.x + b.x;
+        dst.y = a.y + b.y;
+    }
+
+    public static void aMerge(Velocity a, Velocity b, Velocity dst) {
+        dst.x = a.x - b.x;
+        dst.y = a.y - b.y;
+    }
+
+
+    public Velocity multi(float d) {
 //        x *= d;
 //        y *= d;
 //

@@ -30,9 +30,9 @@ public class BubbleView extends View {
 
     private float locationY;  //在父控件中的纵坐标
 
-    private float velocityX;  //在x轴的速度 单位 px/s
-
-    private float velocityY;    //在Y轴的速度 单位 px/s
+//    private float velocityX;  //在x轴的速度 单位 px/s
+//
+//    private float velocityY;    //在Y轴的速度 单位 px/s
 
     private long lastTime;    //上次打点时间,用来计算新的位置
 
@@ -80,12 +80,10 @@ public class BubbleView extends View {
     }
 
     public void setVelocityX(float velocityX) {
-        this.velocityX = velocityX;
         velocity.x = velocityX;
     }
 
     public void setVelocityY(float velocityY) {
-        this.velocityY = velocityY;
         velocity.y = velocityY;
     }
 
@@ -126,11 +124,11 @@ public class BubbleView extends View {
     }
 
     public float getVelocityX() {
-        return velocityX;
+        return velocity.x;
     }
 
     public float getVelocityY() {
-        return velocityY;
+        return velocity.y;
     }
 
     public void setForceX(float forceX) {
@@ -147,8 +145,6 @@ public class BubbleView extends View {
 
     public void setVelocity(Velocity velocity) {
         this.velocity = velocity;
-        this.velocityX = (float) velocity.x;
-        this.velocityY = (float) velocity.y;
     }
 
     public void move(long time) {
@@ -171,19 +167,16 @@ public class BubbleView extends View {
             float dvy = (float) dt * forceY /*/ weight*/;
 
             //v0t + 1/2at^2
-            float dlx = (float)(dt * velocityX/* + 0.5 * forceX / weight * dt * dt*/);
-            float dly = (float)(dt * velocityY/* + 0.5 * forceY / weight * dt * dt*/);
+            float dlx = (float)(dt * velocity.x /* + 0.5 * forceX / weight * dt * dt*/);
+            float dly = (float)(dt * velocity.y/* + 0.5 * forceY / weight * dt * dt*/);
 
 
 //            Log.i("BubbleView","move    dlx = " + dlx + "   dly = " + dly + "   dvx = " + dvx + "   dvy = " + dvy);
             locationX += dlx;
             locationY += dly;
 
-            velocityX += dvx;
-            velocityY += dvy;
-
-            velocity.x = velocityX;
-            velocity.y = velocityY;
+            velocity.x += dvx;
+            velocity.y += dvy;
 
             lastTime = time;
 
