@@ -24,11 +24,17 @@ public class BubbleContainer extends FrameLayout {
 
     private List<BubbleView> mViewList = new ArrayList<>();
 
+    private List<Integer> mValueList = new ArrayList<>();
+
     private static final int FORCE = 0;
 
-    private static final float LOSS = 0.7f;
+    private static final float LOSS = 1f;
 
     private static final float GRAVITY = (float) 40;
+
+    private static final int TIME = 500;
+
+    private long mLastAddTime;
 
     private Velocity va1 = new Velocity();
     private Velocity va2 = new Velocity();
@@ -38,6 +44,8 @@ public class BubbleContainer extends FrameLayout {
     private Velocity _vb1 = new Velocity();
 
     private Random mRandom;
+
+    private boolean hasArrive;
 
 
     public BubbleContainer(Context context) {
@@ -70,18 +78,35 @@ public class BubbleContainer extends FrameLayout {
 
         mRandom = new Random();
 
-        for (int i = 0; i < 20; i ++) {
-            BubbleView bubbleView = new BubbleView(getContext(), i);
-            bubbleView.setLocationX(mRandom.nextInt(1440));
-            bubbleView.setLocationY(mRandom.nextInt(2560));
-            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(400, 400);
-
-            addView(bubbleView, params);
-            mViewList.add(bubbleView);
+        for (int i = 0; i < 60; i ++) {
+            mValueList.add(i);
         }
+
+//        for (int i = 0; i < 20; i ++) {
+//            BubbleView bubbleView = new BubbleView(getContext(), i);
+//            bubbleView.setLocationX(1440);
+//            bubbleView.setLocationY(mRandom.nextInt(2560));
+//            bubbleView.setVelocityX(-60);
+//            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(400, 400);
+//
+//            mViewList.add(bubbleView);
+//        }
 
         layoutBubble();
 
+    }
+
+    private void addBubble(int x,Velocity v,int value) {
+        BubbleView bubbleView = new BubbleView(getContext(), value);
+        bubbleView.setLocationX(1440 + BubbleView.SELECT_RADIUS);
+        bubbleView.setLocationY(mRandom.nextInt(2560));
+        bubbleView.setVelocityX(-150);
+        bubbleView.setVelocityY(mRandom.nextInt(200) - 100);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(400, 400);
+
+        addView(bubbleView,params);
+        bubbleView.setTranslationX(bubbleView.getLocationX());
+        mViewList.add(bubbleView);
     }
 
     @Override
@@ -89,8 +114,16 @@ public class BubbleContainer extends FrameLayout {
         if (event.getAction() == MotionEvent.ACTION_UP) {
             BubbleView view = findBubble(event);
             if (view != null) {
-                view.onSelect();
+                if (!view.isSelect()) {
+                    view.onSelect();
+                } else {
+                    view.onDisSelect();
+                }
             }
+        } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+
+        } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+
         }
         return true;
     }
@@ -130,12 +163,48 @@ public class BubbleContainer extends FrameLayout {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
+
+    private void checkKnockWall(BubbleView bubbleView) {
+
+        if (bubbleView.getLocationY() - bubbleView.getR() < 1 && bubbleView.getVelocityY() < 0) {
+            bubbleView.setLocationY(1 + bubbleView.getR());
+            bubbleView.setVelocityY(-bubbleView.getVelocityY());
+            bubbleView.move(SystemClock.elapsedRealtime());
+        } else if (bubbleView.getLocationY() + bubbleView.getR() > getHeight() - 1 && bubbleView.getVelocityY() > 0) {
+            bubbleView.setLocationY(getHeight() - 1 - bubbleView.getR());
+            bubbleView.setVelocityY(-bubbleView.getVelocityY());
+            bubbleView.move(SystemClock.elapsedRealtime());
+        }
+
+    }
+
+
     private void checkKnock() {
 
-        int count = getChildCount();
+        if (!hasArrive && SystemClock.elapsedRealtime() - mLastAddTime > TIME) {
+            addBubble(1440,new Velocity(-60,0),mValueList.remove(0));
+            mLastAddTime = SystemClock.elapsedRealtime();
+        }
+
+        int count = mViewList.size();
 
         for (int i = 0; i < count; i++) {
-            BubbleView a = (BubbleView) getChildAt(i);
+
+            BubbleView a = mViewList.get(i);
+
+            checkKnockWall(a);
+
+            if (a.getLocationX() + a.getR() < 0) {
+                removeView(a);
+                mViewList.remove(a);
+                count --;
+                hasArrive = true;
+                mValueList.add(a.getIndex());
+                if (mValueList.size() > 0) {
+                    addBubble(1440, new Velocity(-60, 0), mValueList.remove(0));
+                }
+                continue;
+            }
 
             float yy = getMeasuredHeight() / 2 - a.getLocationY();
             float xx = getMeasuredWidth() / 2 - a.getLocationX();
@@ -145,16 +214,16 @@ public class BubbleContainer extends FrameLayout {
             float velocityX = a.getVelocityX();
             float velocityY = a.getVelocityY();
 
-            a.setForceX(GRAVITY * xx / l + (velocityX > 0 ? -FORCE * velocityX * velocityX : a.getVelocityX() == 0 ? 0 : FORCE * velocityX * velocityX));
+//            a.setForceX(GRAVITY * xx / l + (velocityX > 0 ? -FORCE * velocityX * velocityX : a.getVelocityX() == 0 ? 0 : FORCE * velocityX * velocityX));
             a.setForceY(GRAVITY * yy / l + (velocityY > 0 ? -FORCE * velocityY * velocityY : a.getVelocityY() == 0 ? 0 : FORCE * velocityY * velocityY));
-
-            a.move(SystemClock.elapsedRealtime());
 
             long startTime = SystemClock.elapsedRealtime();
 
+            a.move(SystemClock.elapsedRealtime());
+
             for (int j = i + 1; j < count; j++) {
 
-                BubbleView b = (BubbleView) getChildAt(j);
+                BubbleView b = mViewList.get(j);
 
                 if (Math.abs(a.getLocationX() - b.getLocationX()) > a.getR() + b.getR() || Math.abs(a.getLocationY() - b.getLocationY()) > b.getR() + a.getR()) {
                     continue;

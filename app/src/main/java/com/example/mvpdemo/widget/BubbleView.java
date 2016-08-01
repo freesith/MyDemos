@@ -19,9 +19,9 @@ import java.util.Random;
  */
 public class BubbleView extends View {
 
-    private static final int NORMAL_RADIUS = 100;   //正常的半径
+    public static final int NORMAL_RADIUS = 100;   //正常的半径
 
-    private static final int SELECT_RADIUS = 200;   //选中半径
+    public static final int SELECT_RADIUS = 200;   //选中半径
 
     private static final int FORCE = 20;   //固定的摩擦力
 
@@ -50,6 +50,8 @@ public class BubbleView extends View {
     private Velocity velocity;
 
     private int index;
+
+    private boolean isSelect;
 
     public BubbleView(Context context) {
         super(context);
@@ -83,12 +85,24 @@ public class BubbleView extends View {
         velocity = new Velocity(0,0);
     }
 
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
     public void setLocationX(float locationX) {
         this.locationX = locationX;
     }
 
     public void setLocationY(float locationY) {
         this.locationY = locationY;
+    }
+
+    public boolean isSelect() {
+        return isSelect;
     }
 
     public void setVelocityX(float velocityX) {
@@ -187,13 +201,21 @@ public class BubbleView extends View {
 
         float v = mTextPaint.measureText("" + index);
         mTextPaint.setTextSize(20);
-        canvas.drawText("" + index, (getWidth() - v) / 2 , getHeight() / 2, mTextPaint);
+        canvas.drawText("" + index, (getWidth() - v) / 2, getHeight() / 2, mTextPaint);
     }
 
     public void onSelect() {
         r = SELECT_RADIUS;
+        isSelect = true;
         ObjectAnimator.ofFloat(this,"scaleX",1,2).setDuration(200).start();
         ObjectAnimator.ofFloat(this,"scaleY",1,2).setDuration(200).start();
+    }
+
+    public void onDisSelect() {
+        isSelect = false;
+        r = NORMAL_RADIUS;
+        ObjectAnimator.ofFloat(this,"scaleX",2,1).setDuration(200).start();
+        ObjectAnimator.ofFloat(this,"scaleY",2,1).setDuration(200).start();
     }
 
 }
