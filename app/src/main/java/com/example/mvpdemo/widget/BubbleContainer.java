@@ -28,9 +28,8 @@ public class BubbleContainer extends FrameLayout {
 
     private static final float LOSS = 0.7f;
 
-    private static final float GRAVITY = (float) 30;
+    private static final float GRAVITY = (float) 40;
 
-    private boolean knocked;
     private Velocity va1 = new Velocity();
     private Velocity va2 = new Velocity();
     private Velocity vb1 = new Velocity();
@@ -72,7 +71,7 @@ public class BubbleContainer extends FrameLayout {
         mRandom = new Random();
 
         for (int i = 0; i < 20; i ++) {
-            BubbleView bubbleView = new BubbleView(getContext());
+            BubbleView bubbleView = new BubbleView(getContext(), i);
             bubbleView.setLocationX(mRandom.nextInt(1440));
             bubbleView.setLocationY(mRandom.nextInt(2560));
             ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(400, 400);
@@ -224,7 +223,7 @@ public class BubbleContainer extends FrameLayout {
                     _va1 = va1.aMerge(va1.aMerge(vb1).multi((float)b.getWeight() / (a.getWeight() + b.getWeight()) * (1 + LOSS)));
                     _vb1 = vb1.merge(va1.aMerge(vb1).multi((float)a.getWeight() / (a.getWeight() + b.getWeight()) * (1 + LOSS)));
 
-                    Log.i("xx","_va1 = " + _va1 + "     _va2 = " + va2 + "     _vb1 = " + _vb1 + "     _vb2 = " + vb2);
+//                    Log.i("xx","_va1 = " + _va1 + "     _va2 = " + va2 + "     _vb1 = " + _vb1 + "     _vb2 = " + vb2);
 
                     Velocity.merge(_va1,va2,a.getVelocity());
                     Velocity.merge(_vb1, vb2, b.getVelocity());

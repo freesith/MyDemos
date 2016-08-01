@@ -43,12 +43,21 @@ public class BubbleView extends View {
 
     private Paint mPaint;
 
+    private Paint mTextPaint;
+
     private Random mRandom;
 
     private Velocity velocity;
 
+    private int index;
+
     public BubbleView(Context context) {
         super(context);
+        init();
+    }
+    public BubbleView(Context context, int i) {
+        super(context);
+        this.index = i;
         init();
     }
 
@@ -68,6 +77,8 @@ public class BubbleView extends View {
     private void init() {
         mRandom = new Random();
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mTextPaint.setColor(Color.WHITE);
         mPaint.setColor(Color.HSVToColor(new float[]{(float) (mRandom.nextInt(360)), (float) (mRandom.nextInt(80) / 100f), (float) ((mRandom.nextInt(30) + 70) / 100f)}));
         velocity = new Velocity(0,0);
     }
@@ -173,6 +184,10 @@ public class BubbleView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         canvas.drawCircle(getWidth() / 2, getHeight() / 2, r, mPaint);
+
+        float v = mTextPaint.measureText("" + index);
+        mTextPaint.setTextSize(20);
+        canvas.drawText("" + index, (getWidth() - v) / 2 , getHeight() / 2, mTextPaint);
     }
 
     public void onSelect() {
