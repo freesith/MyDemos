@@ -171,12 +171,12 @@ public class BubbleView extends View {
 
             float weight = r / 100 * r / 100;
 
-            float dvx = (float) dt * forceX /*/ weight*/;
-            float dvy = (float) dt * forceY /*/ weight*/;
+            float dvx = (float) dt * forceX / weight;
+            float dvy = (float) dt * forceY / weight;
 
             //v0t + 1/2at^2
-            float dlx = (float)(dt * velocity.x /* + 0.5 * forceX / weight * dt * dt*/);
-            float dly = (float)(dt * velocity.y/* + 0.5 * forceY / weight * dt * dt*/);
+            float dlx = (float)(dt * velocity.x * 0.7 + 0.5 * forceX / weight * dt * dt);
+            float dly = (float)(dt * velocity.y * 0.7 + 0.5 * forceY / weight * dt * dt);
 
 
 //            Log.i("BubbleView","move    dlx = " + dlx + "   dly = " + dly + "   dvx = " + dvx + "   dvy = " + dvy);

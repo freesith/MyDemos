@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.example.mvpdemo.widget.BubbleContainer xmlns:android="http://schemas.android.com/apk/res/android"
+<com.example.mvpdemo.widget.FloatBubbleContainer xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
+                                            android:background="#ffffff"
                                             android:id="@+id/layout"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-</com.example.mvpdemo.widget.BubbleContainer>
+</com.example.mvpdemo.widget.FloatBubbleContainer>

@@ -2,13 +2,14 @@ package com.example.mvpdemo.activity;
 
 import com.example.mvpdemo.R;
 import com.example.mvpdemo.widget.BubbleContainer;
+import com.example.mvpdemo.widget.FloatBubbleContainer;
 
 /**
  * Created by wangchao on 16/7/25.
  */
 public class EActivity extends BaseActivity {
 
-    private BubbleContainer mBubbleContainer;
+    private FloatBubbleContainer mBubbleContainer;
 
     @Override
     protected int getLayoutResource() {
@@ -17,7 +18,7 @@ public class EActivity extends BaseActivity {
 
     @Override
     protected void initActivityViews() {
-        mBubbleContainer = (BubbleContainer) findViewById(R.id.layout);
+        mBubbleContainer = (FloatBubbleContainer) findViewById(R.id.layout);
     }
 
     @Override

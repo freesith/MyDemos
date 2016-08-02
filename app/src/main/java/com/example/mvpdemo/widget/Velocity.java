@@ -28,6 +28,11 @@ public class Velocity {
         dst.y = a.y - b.y;
     }
 
+    public void mergeUp(float a, float b) {
+        x += a;
+        y += b;
+    }
+
 
     public Velocity multi(float d) {
 //        x *= d;
