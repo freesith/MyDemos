@@ -2,6 +2,9 @@ package com.example.mvpdemo.widget;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Build;
 import android.os.SystemClock;
 import android.util.AttributeSet;
@@ -25,11 +28,11 @@ public class FloatBubbleContainer extends FrameLayout {
 
     private List<Integer> mValueList = new ArrayList<>();
 
-    private static final int FORCE = 0;
+    private static final int FORCE = 30;
 
     private static final float LOSS = 0;
 
-    private static final float GRAVITY = (float) 40;
+    private static final float GRAVITY = (float) 80;
 
     private static final int TIME = 500;
 
@@ -42,6 +45,10 @@ public class FloatBubbleContainer extends FrameLayout {
     private float mLastEventX;
 
     private float mLastEventY;
+
+    private Paint mPaint;
+
+    private boolean canSelect = true;
 
     private Velocity va1 = new Velocity();
     private Velocity va2 = new Velocity();
@@ -83,17 +90,15 @@ public class FloatBubbleContainer extends FrameLayout {
     private void init() {
 
         mRandom = new Random();
-
-//        for (int i = 0; i < 60; i ++) {
-//            mValueList.add(i);
-//        }
+        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPaint.setColor(Color.RED);
 
         for (int i = 0; i < 20; i ++) {
             BubbleView bubbleView = new BubbleView(getContext(), i);
             bubbleView.setLocationX(mRandom.nextInt(1440));
             bubbleView.setLocationY(mRandom.nextInt(2560));
-            bubbleView.setVelocityX(mRandom.nextInt(120) - 60);
-            bubbleView.setVelocityY(mRandom.nextInt(120) - 60);
+//            bubbleView.setVelocityX(mRandom.nextInt(120) - 60);
+//            bubbleView.setVelocityY(mRandom.nextInt(120) - 60);
             ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(400, 400);
             addView(bubbleView, params);
 
@@ -108,8 +113,8 @@ public class FloatBubbleContainer extends FrameLayout {
         BubbleView bubbleView = new BubbleView(getContext(), value);
         bubbleView.setLocationX(1440 + BubbleView.SELECT_RADIUS);
         bubbleView.setLocationY(mRandom.nextInt(2560));
-        bubbleView.setVelocityX(-150);
-        bubbleView.setVelocityY(mRandom.nextInt(200) - 100);
+//        bubbleView.setVelocityX(-150);
+//        bubbleView.setVelocityY(mRandom.nextInt(200) - 100);
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(400, 400);
 
         addView(bubbleView,params);
@@ -123,21 +128,25 @@ public class FloatBubbleContainer extends FrameLayout {
         if (event.getAction() == MotionEvent.ACTION_UP) {
             BubbleView view = findBubble(event);
             if (view != null) {
-                if (!view.isSelect()) {
-                    view.onSelect();
-                } else {
-                    view.onDisSelect();
+                if (canSelect) {
+                    if (!view.isSelect()) {
+                        view.onSelect();
+                    } else {
+                        view.onDisSelect();
+                    }
                 }
             } else {
                 Log.i("xx","onActionUp      lastX = " + mLastEventX + "     eventX = " + event.getX() + "   lastTime = " + mLastEventTime + "       current = " + SystemClock.elapsedRealtime());
                 if (mLastEventX != 0 || mLastEventY != 0) {
                     float x = (float)(event.getX() - mLastEventX) / (SystemClock.elapsedRealtime() - mLastEventTime);
                     float y = (float)(event.getY() - mLastEventY) / (SystemClock.elapsedRealtime() - mLastEventTime);
-                    speedUp(x, y);
+                    speedUp(10 * x, 10 * y);
                 }
             }
             mLastEventX = 0;
             mLastEventY = 0;
+
+            canSelect = true;
 
         } else if (event.getAction() == MotionEvent.ACTION_DOWN){
 
@@ -148,7 +157,7 @@ public class FloatBubbleContainer extends FrameLayout {
 
                 float x = (float)(event.getX() - mLastEventX) / (SystemClock.elapsedRealtime() - mLastEventTime);
                 float y = (float)(event.getY() - mLastEventY) / (SystemClock.elapsedRealtime() - mLastEventTime);
-                speedUp(x, y);
+                speedUp(10 * x, 10 * y);
             }
             mLastEvent = event;
         }
@@ -165,7 +174,7 @@ public class FloatBubbleContainer extends FrameLayout {
         if (x == 0 && y == 0) {
             return;
         }
-
+        canSelect = false;
         Log.i("xx","==== onMove  x = " + x + "      y = " + y);
         for (BubbleView bubbleView : mViewList) {
             bubbleView.setLocationX(bubbleView.getLocationX() + x);
@@ -226,11 +235,40 @@ public class FloatBubbleContainer extends FrameLayout {
             bubbleView.setLocationY(1 + bubbleView.getR());
             bubbleView.setVelocityY(-bubbleView.getVelocityY());
             bubbleView.move(SystemClock.elapsedRealtime());
-        } else if (bubbleView.getLocationY() + bubbleView.getR() > getHeight() - 1 /*&& bubbleView.getVelocityY() > 0*/) {
-            bubbleView.setLocationY(getHeight() - 1 - bubbleView.getR());
+        } else if (bubbleView.getLocationY() + bubbleView.getR() > 2560 - 1 /*&& bubbleView.getVelocityY() > 0*/) {
+            bubbleView.setLocationY(2400 - 1 - bubbleView.getR());
             bubbleView.setVelocityY(-bubbleView.getVelocityY());
             bubbleView.move(SystemClock.elapsedRealtime());
         }
+    }
+
+    private void setForce(BubbleView bubbleView) {
+        float yy = getMeasuredHeight() / 2 - bubbleView.getLocationY();
+        float xx = getMeasuredWidth() / 2 - bubbleView.getLocationX();
+
+        double l = Math.sqrt(xx * xx + yy * yy);
+
+        float velocityX = bubbleView.getVelocityX();
+        float velocityY = bubbleView.getVelocityY();
+
+        /**
+         * 静摩擦 & 动摩擦
+         */
+
+//        Log.i("xx","======GRAVITY = " + (GRAVITY * (l / 500)) + "       l = " + l + "   xx = " + xx + "    yy = " + yy);
+
+        if (GRAVITY * (l / 500) < FORCE && bubbleView.getVelocity().getValue() < 2) {
+            bubbleView.setVelocityX(0);
+            bubbleView.setVelocityY(0);
+            bubbleView.setForceX(0);
+            bubbleView.setForceY(0);
+        } else {
+            bubbleView.setForceX((float) (GRAVITY * xx / l * (l / 500) + (velocityX > 0 ? -FORCE : velocityX < 0 ? FORCE : 0) * Math.abs(xx) / l));
+            bubbleView.setForceY((float) (GRAVITY * yy / l * (l / 500) + (velocityY > 0 ? -FORCE : velocityY < 0 ? FORCE : 0) * Math.abs(yy) / l));
+        }
+
+//        Log.i("xx","==== ForceX = " + bubbleView.getForceX() + "        ForceY = "  + bubbleView.getForceY());
+
     }
 
     private void checkKnock() {
@@ -245,40 +283,13 @@ public class FloatBubbleContainer extends FrameLayout {
         for (int i = 0; i < count; i++) {
 
             BubbleView a = mViewList.get(i);
-
             checkKnockWall(a);
-
-//            if (a.getLocationX() + a.getR() < 0) {
-//                removeView(a);
-//                mViewList.remove(a);
-//                count --;
-//                hasArrive = true;
-//                mValueList.add(a.getIndex());
-//                if (mValueList.size() > 0) {
-//                    addBubble(1440, new Velocity(-60, 0), mValueList.remove(0));
-//                }
-//                continue;
-//            }
-
-            float yy = getMeasuredHeight() / 2 - a.getLocationY();
-            float xx = getMeasuredWidth() / 2 - a.getLocationX();
-
-            float l = (float) Math.sqrt(xx * xx + yy * yy);
-
-            float velocityX = a.getVelocityX();
-            float velocityY = a.getVelocityY();
-
-            a.setForceX(GRAVITY * xx / l * (l / 200)/* * (l / 200) */+ (velocityX > 5 ? -FORCE /** velocityX * velocityX */: a.getVelocityX() < -5 ? FORCE /** velocityX * velocityX */: 0));
-            a.setForceY(GRAVITY * yy / l * (l / 200) /** (l / 200)*/ + (velocityY > 5 ? -FORCE /* /*velocityY * velocityY */: a.getVelocityY() < -5 ? FORCE /** velocityY * velocityY */: 0));
-
-            long startTime = SystemClock.elapsedRealtime();
-
+            setForce(a);
             a.move(SystemClock.elapsedRealtime());
 
             for (int j = i + 1; j < count; j++) {
 
                 BubbleView b = mViewList.get(j);
-
                 if (Math.abs(a.getLocationX() - b.getLocationX()) > a.getR() + b.getR() || Math.abs(a.getLocationY() - b.getLocationY()) > b.getR() + a.getR()) {
                     continue;
                 }
@@ -309,9 +320,6 @@ public class FloatBubbleContainer extends FrameLayout {
                         a.setLocationX(a.getLocationX() + dd / 2);
                     }
 
-
-                    long time = SystemClock.elapsedRealtime();
-
                     float dy = Math.abs(a.getLocationY() - b.getLocationY());
                     float dx = Math.abs(a.getLocationX() - b.getLocationX());
 
@@ -322,8 +330,8 @@ public class FloatBubbleContainer extends FrameLayout {
 //                    Log.i("xx","转换前a速度为" + a.getVelocity());
 //                    Log.i("xx", "转换前b速度为" + b.getVelocity());
 
-                    float cosAlpha = /*Math.cos(alpha)*/ dx / dl;
-                    float sinAlpha =/* Math.sin(alpha)*/ dy / dl;
+                    float cosAlpha = dx / dl;
+                    float sinAlpha = dy / dl;
 
                     va1.x = (a.getVelocity().x * cosAlpha - a.getVelocity().y * sinAlpha) * cosAlpha;
                     va1.y = -(a.getVelocity().x * cosAlpha - a.getVelocity().y * sinAlpha) * sinAlpha;
@@ -347,7 +355,7 @@ public class FloatBubbleContainer extends FrameLayout {
 
 //                    Log.i("xx","_va1 = " + _va1 + "     _va2 = " + va2 + "     _vb1 = " + _vb1 + "     _vb2 = " + vb2);
 
-                    Velocity.merge(_va1,va2,a.getVelocity());
+                    Velocity.merge(_va1, va2, a.getVelocity());
                     Velocity.merge(_vb1, vb2, b.getVelocity());
 
 //                    Log.i("xx","碰撞后动能和为" + (a.getVelocity().getValue() * a.getVelocity().getValue() + b.getVelocity().getValue() * b.getVelocity().getValue()));
@@ -356,14 +364,23 @@ public class FloatBubbleContainer extends FrameLayout {
 //                    Log.i("xx","碰撞后 a 的vx = " + a.getVelocityX() + "    vy = " + a.getVelocityY() + "   a 的lx = " + a.getLocationX() + "    ly = " + a.getLocationY());
 //                    Log.i("xx","碰撞后 b 的vx = " + b.getVelocityX() + "    vy = " + b.getVelocityY() + "   b 的lx = " + b.getLocationX() + "    ly = " + b.getLocationY());
 //                    Log.i("xx","================");
+                    setForce(a);
+                    setForce(b);
                     a.move(SystemClock.elapsedRealtime());
                     b.move(SystemClock.elapsedRealtime());
                 }
             }
 
-
 //            Log.i("xx","球的数量为 " + count +  "    遍历需要的时间为 " + (SystemClock.elapsedRealtime()  - startTime));
 
         }
+    }
+
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        canvas.drawCircle(getWidth() / 2, getHeight() / 2, 4, mPaint);
+
     }
 }

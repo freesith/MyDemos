@@ -85,6 +85,14 @@ public class BubbleView extends View {
         velocity = new Velocity(0,0);
     }
 
+    public float getForceX() {
+        return forceX;
+    }
+
+    public float getForceY() {
+        return forceY;
+    }
+
     public int getIndex() {
         return index;
     }
@@ -164,22 +172,15 @@ public class BubbleView extends View {
             lastTime = time;
         } else {
 
-//            double velocity = Math.sqrt(velocityX * velocityX + velocityY * velocityY); //运动放心的合速度
-
-//            double fx = FORCE * Math.abs(velocityX) / velocity; //横向摩擦力绝对值
-//            double fy = FORCE * Math.abs(velocityY) / velocity; //纵向摩擦力绝对值
-
             float weight = r / 100 * r / 100;
 
-            float dvx = (float) dt * forceX / weight;
-            float dvy = (float) dt * forceY / weight;
+            float dvx = dt * forceX / weight;
+            float dvy = dt * forceY / weight;
 
             //v0t + 1/2at^2
-            float dlx = (float)(dt * velocity.x * 0.7 + 0.5 * forceX / weight * dt * dt);
-            float dly = (float)(dt * velocity.y * 0.7 + 0.5 * forceY / weight * dt * dt);
+            float dlx = (float)(dt * velocity.x + 0.5 * forceX / weight * dt * dt);
+            float dly = (float)(dt * velocity.y + 0.5 * forceY / weight * dt * dt);
 
-
-//            Log.i("BubbleView","move    dlx = " + dlx + "   dly = " + dly + "   dvx = " + dvx + "   dvy = " + dvy);
             locationX += dlx;
             locationY += dly;
 
@@ -189,6 +190,8 @@ public class BubbleView extends View {
             lastTime = time;
 
         }
+
+//        Log.i("xx","MOVE    VX = " + velocity.x + "     VY = " + velocity.y + "     LOCATION X = " + locationX + "      LOCATION Y = " + locationY + "  FORCE X = " + forceX + "    FORCE Y = " + forceY);
 
         setTranslationX(locationX - getWidth() / 2);
         setTranslationY(locationY - getHeight() / 2);
