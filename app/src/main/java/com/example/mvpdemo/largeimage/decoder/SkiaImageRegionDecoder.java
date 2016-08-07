@@ -10,11 +10,12 @@ import android.graphics.Bitmap.Config;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
 /**
- * Default implementation of {@link com.davemorrissey.labs.subscaleview.decoder.ImageRegionDecoder}
+ * Default implementation of
  * using Android's {@link BitmapRegionDecoder}, based on the Skia library. This
  * works well in most circumstances and has reasonable performance due to the cached decoder instance,
  * however it has some problems with grayscale, indexed and CMYK images.
@@ -73,6 +74,28 @@ public class SkiaImageRegionDecoder implements ImageRegionDecoder {
             }
         }
         return new Point(decoder.getWidth(), decoder.getHeight());
+    }
+
+    @Override
+    public Point init(Context context, InputStream inputStream) {
+        if (inputStream == null) {
+            return null;
+        }
+        try {
+            decoder = BitmapRegionDecoder.newInstance(inputStream, false);
+            return new Point(decoder.getWidth(), decoder.getHeight());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
     }
 
     @Override

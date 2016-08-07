@@ -6,6 +6,8 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
 
+import java.io.InputStream;
+
 /**
  * Interface for image decoding classes, allowing the default {@link android.graphics.BitmapRegionDecoder}
  * based on the Skia library to be replaced with a custom class.
@@ -24,6 +26,9 @@ public interface ImageRegionDecoder {
      * @throws Exception if initialisation fails.
      */
     Point init(Context context, Uri uri) throws Exception;
+
+
+    Point init(Context context, InputStream inputStream);
 
     /**
      * Decode a region of the image with the given sample size. This method is called off the UI thread so it can safely

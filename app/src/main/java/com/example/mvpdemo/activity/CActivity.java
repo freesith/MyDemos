@@ -26,7 +26,6 @@ public class CActivity extends BaseActivity implements IListView<UserInfo>, IReq
     private BaseAdapter mAdapter;
 
 
-
     @Override
     protected int getLayoutResource() {
         return R.layout.layout_activity_c;

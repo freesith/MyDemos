@@ -5,6 +5,7 @@ import android.graphics.Rect;
 import android.net.Uri;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
@@ -23,6 +24,7 @@ public final class ImageSource {
     private final Uri uri;
     private final Bitmap bitmap;
     private final Integer resource;
+    private InputStream stream = null;
     private boolean tile;
     private int sWidth;
     private int sHeight;
@@ -37,6 +39,14 @@ public final class ImageSource {
         this.sWidth = bitmap.getWidth();
         this.sHeight = bitmap.getHeight();
         this.cached = cached;
+    }
+
+    private ImageSource(InputStream stream) {
+        bitmap = null;
+        this.stream = stream;
+        this.uri = null;
+        this.resource = null;
+        this.tile = false;
     }
 
     private ImageSource(Uri uri) {
@@ -63,6 +73,10 @@ public final class ImageSource {
         this.uri = null;
         this.resource = resource;
         this.tile = true;
+    }
+
+    public static ImageSource stream(InputStream stream) {
+        return new ImageSource(stream);
     }
 
     /**
@@ -201,6 +215,10 @@ public final class ImageSource {
 
     protected final Uri getUri() {
         return uri;
+    }
+
+    public InputStream getStream() {
+        return stream;
     }
 
     protected final Bitmap getBitmap() {
