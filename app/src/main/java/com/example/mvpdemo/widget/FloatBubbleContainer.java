@@ -26,21 +26,23 @@ public class FloatBubbleContainer extends FrameLayout {
 
     private List<BubbleView> mViewList = new ArrayList<>();
 
-    private List<Integer> mValueList = new ArrayList<>();
-
+    /**
+     * 与运动方向相反的摩擦力
+     */
     private static final int FORCE = 30;
 
+
+    /**
+     * 碰撞后的速度差与碰撞前速度差之比[0,1], 0 : 完全非弹性碰撞; 1 : 弹性碰撞
+     */
     private static final float LOSS = 0;
 
+    /**
+     * 中心点的吸引力常数(类似胡克定律 F = K * l 中的K)
+     */
     private static final float GRAVITY = (float) 80;
 
-    private static final int TIME = 500;
-
-    private long mLastAddTime;
-
     private long mLastEventTime;
-
-    private MotionEvent mLastEvent;
 
     private float mLastEventX;
 
@@ -50,17 +52,25 @@ public class FloatBubbleContainer extends FrameLayout {
 
     private boolean canSelect = true;
 
+    /**
+     * ab碰撞前,ab在碰撞方向的速度
+     */
     private Velocity va1 = new Velocity();
-    private Velocity va2 = new Velocity();
     private Velocity vb1 = new Velocity();
+
+    /**
+     * ab碰撞前,ab在碰撞垂直方向的速度
+     */
+    private Velocity va2 = new Velocity();
     private Velocity vb2 = new Velocity();
+
+    /**
+     * ab碰撞后,ab在碰撞方向的速度,垂直方向速度不变
+     */
     private Velocity _va1 = new Velocity();
     private Velocity _vb1 = new Velocity();
 
     private Random mRandom;
-
-    private boolean hasArrive;
-
 
     public FloatBubbleContainer(Context context) {
         super(context);
@@ -159,7 +169,6 @@ public class FloatBubbleContainer extends FrameLayout {
                 float y = (float)(event.getY() - mLastEventY) / (SystemClock.elapsedRealtime() - mLastEventTime);
                 speedUp(10 * x, 10 * y);
             }
-            mLastEvent = event;
         }
 
         mLastEventX = event.getX();
@@ -230,13 +239,25 @@ public class FloatBubbleContainer extends FrameLayout {
     }
 
 
+    /**
+     * 检测是否碰撞到布局边界
+     * @param bubbleView
+     */
     private void checkKnockWall(BubbleView bubbleView) {
+
+        /**
+         * 上边界
+         */
         if (bubbleView.getLocationY() - bubbleView.getR() < 1/* && bubbleView.getVelocityY() < 0*/) {
             bubbleView.setLocationY(1 + bubbleView.getR());
             bubbleView.setVelocityY(-bubbleView.getVelocityY());
             bubbleView.move(SystemClock.elapsedRealtime());
+
+        /**
+         * 下边界
+         */
         } else if (bubbleView.getLocationY() + bubbleView.getR() > 2560 - 1 /*&& bubbleView.getVelocityY() > 0*/) {
-            bubbleView.setLocationY(2400 - 1 - bubbleView.getR());
+            bubbleView.setLocationY(2560 - 1 - bubbleView.getR());
             bubbleView.setVelocityY(-bubbleView.getVelocityY());
             bubbleView.move(SystemClock.elapsedRealtime());
         }
