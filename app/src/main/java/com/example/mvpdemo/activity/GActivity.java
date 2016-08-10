@@ -41,7 +41,7 @@ public class GActivity extends BaseActivity {
             public void run() {
                 super.run();
                 try {
-                    URL url = new URL("http://ww1.sinaimg.cn/bmiddle/a083fa30gw1evex3psnfij20c8cq17wi.jpg");
+                    URL url = new URL("http://p-test.jiemosrc.com/Np1IbLZSJtjo7csz1RiiBg.jpeg");
                     URLConnection conn = url.openConnection();
                     final InputStream inputStream = conn.getInputStream();
 

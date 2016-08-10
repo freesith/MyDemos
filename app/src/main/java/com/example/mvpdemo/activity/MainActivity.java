@@ -81,6 +81,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.g:
                 startActivity(GActivity.class);
                 break;
+            case R.id.h:
+                startActivity(HActivity.class);
+                break;
         }
     }
 
