@@ -1,7 +1,11 @@
 package com.example.mvpdemo.activity;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +37,16 @@ public class HActivity extends BaseActivity {
         mViewPager = (NarrowViewPager) findViewById(R.id.pager);
         mRandom = new Random();
         mViewPager.setAdapter(new NarrowAdapter());
+
+
+        WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        wifiManager.getWifiState();
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        Log.i("WIFI","wifiInfo.getSSID() = " + wifiInfo.getSSID() + "\n" +
+                    "wifiInfo.getBSSID() = " + wifiInfo.getBSSID() +"\n" +
+                    "wifiInfo.getIpAddress() = " + wifiInfo.getIpAddress());
+
+
     }
 
 

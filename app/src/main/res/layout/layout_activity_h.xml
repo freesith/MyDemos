@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.example.mvpdemo.widget.NarrowViewPager android:id="@+id/pager"
-                                            android:background="#ffffff"
-                                            xmlns:android="http://schemas.android.com/apk/res/android"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="match_parent">
 
-</com.example.mvpdemo.widget.NarrowViewPager>
+<com.example.mvpdemo.widget.NarrowLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#ffffff"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.example.mvpdemo.widget.NarrowViewPager
+        android:id="@+id/pager"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+    </com.example.mvpdemo.widget.NarrowViewPager>
+
+</com.example.mvpdemo.widget.NarrowLayout>

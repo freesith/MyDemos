@@ -108,7 +108,9 @@ import java.util.Comparator;
 public class NarrowViewPager extends ViewGroup {
 
 
-    private static final int OFFSET = 100;
+    private static int OFFSET = 100;
+
+    private static int PADDING = 40;
 
     /**
      * Indicates that the pager is in an idle, settled state. The current
@@ -450,7 +452,7 @@ public class NarrowViewPager extends ViewGroup {
     }
 
     private int getClientWidth() {
-        return getMeasuredWidth() - getPaddingLeft() - getPaddingRight() - 2 * OFFSET;
+        return getMeasuredWidth() - getPaddingLeft() - getPaddingRight() - 2 * (OFFSET);
     }
 
     /**
@@ -527,6 +529,7 @@ public class NarrowViewPager extends ViewGroup {
             if (dispatchSelected && mInternalPageChangeListener != null) {
                 mInternalPageChangeListener.onPageSelected(item);
             }
+            findChildren();
             requestLayout();
         } else {
             populate(item);
@@ -549,6 +552,7 @@ public class NarrowViewPager extends ViewGroup {
             if (dispatchSelected && mInternalPageChangeListener != null) {
                 mInternalPageChangeListener.onPageSelected(item);
             }
+            findChildren();
         } else {
             if (dispatchSelected && mOnPageChangeListener != null) {
                 mOnPageChangeListener.onPageSelected(item);
@@ -556,6 +560,7 @@ public class NarrowViewPager extends ViewGroup {
             if (dispatchSelected && mInternalPageChangeListener != null) {
                 mInternalPageChangeListener.onPageSelected(item);
             }
+            findChildren();
             completeScroll(false);
             scrollTo(destX, 0);
             pageScrolled(destX);
@@ -1389,7 +1394,7 @@ public class NarrowViewPager extends ViewGroup {
                 final LayoutParams lp = (LayoutParams) child.getLayoutParams();
                 if (lp == null || !lp.isDecor) {
                     final int widthSpec = MeasureSpec.makeMeasureSpec(
-                            (int) (childWidthSize * lp.widthFactor - 2 * OFFSET), MeasureSpec.EXACTLY);
+                            (int) (childWidthSize * lp.widthFactor - 2 * (OFFSET + PADDING)), MeasureSpec.EXACTLY);
                     child.measure(widthSpec, mChildHeightMeasureSpec);
                 }
             }
@@ -1500,7 +1505,7 @@ public class NarrowViewPager extends ViewGroup {
             }
         }
 
-        final int childWidth = width - paddingLeft - paddingRight - 2 * OFFSET;
+        final int childWidth = width - paddingLeft - paddingRight - 2 * (OFFSET);
         // Page views. Do this once we have the right padding offsets from above.
         for (int i = 0; i < count; i++) {
             final View child = getChildAt(i);
@@ -1527,7 +1532,7 @@ public class NarrowViewPager extends ViewGroup {
                     if (DEBUG) Log.v(TAG, "Positioning #" + i + " " + child + " f=" + ii.object
                             + ":" + childLeft + "," + childTop + " " + child.getMeasuredWidth()
                             + "x" + child.getMeasuredHeight());
-                    child.layout(childLeft + OFFSET, childTop, (int) (childLeft + child.getMeasuredWidth()) + OFFSET,
+                    child.layout(childLeft + OFFSET + PADDING , childTop + (int)((OFFSET + PADDING) * (float)getHeight() / getWidth()), (int) (childLeft + child.getMeasuredWidth()) + OFFSET + PADDING,
                             childTop + child.getMeasuredHeight());
                 }
             }
@@ -1541,6 +1546,61 @@ public class NarrowViewPager extends ViewGroup {
         }
         mFirstLayout = false;
     }
+
+
+
+    private View mCurrent;
+    private View mLeft;
+    private View mRight;
+
+    private void findChildren() {
+        Log.i("xx","Find Children============");
+        mCurrent = null;
+        mLeft = null;
+        mRight = null;
+        int count = getChildCount();
+        View child = null;
+        for (int i = 0; i < count; i ++) {
+            child = getChildAt(i);
+            ItemInfo itemInfo = infoForChild(child);
+            if (mCurrent != null && mLeft != null && mRight != null) {
+                break;
+            }
+            if (itemInfo != null && itemInfo.position == mCurItem) {
+                mCurrent = child;
+                Log.i("xx","FIND CURRENT    POS = " + i);
+                continue;
+            } else if (itemInfo != null && itemInfo.position == mCurItem -1) {
+                mLeft = child;
+                Log.i("xx","FIND LEFT    POS = " + i);
+                continue;
+            } else if (itemInfo != null && itemInfo.position == mCurItem +1) {
+                mRight = child;
+                Log.i("xx","FIND RIGHT    POS = " + i);
+                continue;
+            }
+        }
+
+    }
+
+
+    public void childScrollUp(int dis) {
+        int hori = (int)((float)dis / getHeight() * getWidth());
+        if (mCurrent != null) {
+            mCurrent.setTranslationY(dis);
+        }
+        if (mLeft != null) {
+            mLeft.setTranslationX( - Math.abs(hori / 2));
+        }
+
+        if (mRight != null) {
+            mRight.setTranslationX( Math.abs(hori / 2));
+        }
+
+
+
+    }
+
 
     @Override
     public void computeScroll() {
