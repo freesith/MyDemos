@@ -4,6 +4,9 @@ import android.content.Context;
 import android.graphics.Color;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.mvpdemo.R;
+import com.example.mvpdemo.fragment.NarrowFragment;
+import com.example.mvpdemo.widget.NarrowParentViewPager;
 import com.example.mvpdemo.widget.NarrowViewPager;
 
 import java.util.Random;
@@ -20,7 +25,7 @@ import java.util.Random;
  */
 public class HActivity extends BaseActivity {
 
-    NarrowViewPager mViewPager;
+    NarrowParentViewPager mViewPager;
 
     Random mRandom;
 
@@ -34,9 +39,9 @@ public class HActivity extends BaseActivity {
 
     @Override
     protected void initActivityViews() {
-        mViewPager = (NarrowViewPager) findViewById(R.id.pager);
+        mViewPager = (NarrowParentViewPager) findViewById(R.id.pager);
         mRandom = new Random();
-        mViewPager.setAdapter(new NarrowAdapter());
+        mViewPager.setAdapter(new NarrowFragmentAdapter(getSupportFragmentManager()));
 
 
         WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
@@ -50,6 +55,22 @@ public class HActivity extends BaseActivity {
     }
 
 
+    class NarrowFragmentAdapter extends FragmentPagerAdapter{
+
+        public NarrowFragmentAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return new NarrowFragment();
+        }
+
+        @Override
+        public int getCount() {
+            return 20;
+        }
+    }
 
     class NarrowAdapter extends PagerAdapter{
 

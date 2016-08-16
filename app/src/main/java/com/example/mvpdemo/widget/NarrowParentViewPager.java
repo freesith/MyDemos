@@ -61,6 +61,8 @@ import android.view.animation.Interpolator;
 import android.widget.Scroller;
 
 
+import com.example.mvpdemo.utils.ChangeUtils;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -105,7 +107,7 @@ import java.util.Comparator;
  * development/samples/Support13Demos/src/com/example/android/supportv13/
  * app/ActionBarTabsPager.java complete}
  */
-public class NarrowViewPager extends ViewGroup {
+public class NarrowParentViewPager extends ViewGroup {
 
 
     private static int OFFSET = 100;
@@ -324,12 +326,12 @@ public class NarrowViewPager extends ViewGroup {
         }
     };
 
-    public NarrowViewPager(Context context) {
+    public NarrowParentViewPager(Context context) {
         super(context);
         initViewPager();
     }
 
-    public NarrowViewPager(Context context, AttributeSet attrs) {
+    public NarrowParentViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
         initViewPager();
     }
@@ -1593,15 +1595,49 @@ public class NarrowViewPager extends ViewGroup {
 
     }
 
+    private ChangeUtils mChangeUtils = new ChangeUtils(){
+        @Override
+        public void onChange(float current) {
+            super.onChange(current);
+            childScrollUp(current);
+        }
+    };
 
-    public void childScrollUp(float dis) {
+
+    private void onRelease() {
+        float maxDistance = getMaxDistance();
+        if (mDragDistance > 0 && mDragDistance < maxDistance) {
+            if (mDragDistance >= maxDistance / 2) {
+                mChangeUtils.startChange(mCurrent,mDragDistance,maxDistance,200);
+            } else {
+                mChangeUtils.startChange(mCurrent,mDragDistance,0,200);
+            }
+        }
+    }
+
+    private float getMaxDistance() {
+        return  (OFFSET + PADDING) * (float) getHeight() / getWidth();
+    }
+
+
+    public boolean childScrollUp(float dis) {
+        if(dis > (OFFSET + PADDING) * (float) getHeight() / getWidth()) {
+            dis = (OFFSET + PADDING) * (float) getHeight() / getWidth();
+        }
+
+        if (dis < 0) {
+            dis = 0;
+        }
+
+        Log.i(TAG,"DISTANCE = " + mDragDistance + "     dis = " + dis);
+        if (mDragDistance == Math.abs(dis)) {
+            return false;
+        } else {
+            mDragDistance = Math.abs(dis);
+        }
 
         Log.i(TAG,"child scroll up = " + dis);
-
-        if(mDragDistance < -(OFFSET + PADDING) * (float) getHeight() / getWidth()) {
-            mDragDistance = -(OFFSET + PADDING) * (float) getHeight() / getWidth();
-            isBeingPushed = false;
-        }
+        dis = -dis;
 
         int hori = (int) (dis / getHeight() * getWidth()) * 2;
 
@@ -1621,10 +1657,50 @@ public class NarrowViewPager extends ViewGroup {
         if (mRight != null) {
             mRight.setTranslationX(/*mRight.getTranslationX() - */ -hori / 2);
         }
-
-
+        return true;
     }
 
+
+
+    @Override
+    public boolean onStartNestedScroll(View child, View target, int nestedScrollAxes) {
+        Log.i(TAG, "onStartNestedScroll      nestedScrollAxes = " + (nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) + "   child = " + child.getClass().getSimpleName() + "    target = " + target.getClass().getSimpleName());
+        Log.i(TAG, "onStartNestedScroll   dis = " + mDragDistance + "     xsss = " + (OFFSET + PADDING) * (float) getHeight() / getWidth());
+        return mDragDistance <= (OFFSET + PADDING) * (float) getHeight() / getWidth() && mDragDistance >= 0;
+    }
+
+    @Override
+    public void onNestedPreScroll(View target, int dx, int dy, int[] consumed) {
+        Log.i(TAG, "onNestedPreScroll    dx = " + dx + "    dy = " + dy + "     consumed = " + consumed[0] + "," + consumed[1]);
+        int scrollY = target.getScrollY();
+        Log.i(TAG,"scrollY = " + scrollY);
+        if (Math.abs(dy) > Math.abs(dx)) {
+            if (dy < 0 && !ViewCompat.canScrollVertically(target,-1)) {
+                childScrollUp(mDragDistance + dy);
+            }else if (dy > 0) {
+                boolean b = childScrollUp(mDragDistance + dy);
+                if (b) {
+                    consumed[1] = dy;
+                }
+            }
+        }
+        super.onNestedPreScroll(target, dx, dy, consumed);
+    }
+
+    @Override
+    public boolean onNestedFling(View target, float velocityX, float velocityY, boolean consumed) {
+        Log.i(TAG, "onNestedFling    x = " + velocityX + "   y = " + velocityY);
+        if (mDragDistance < (OFFSET + PADDING) * (float) getHeight() / getWidth()) {
+            return false;
+        }
+        return super.onNestedFling(target, velocityX, velocityY, consumed);
+    }
+
+    @Override
+    public void onStopNestedScroll(View child) {
+        super.onStopNestedScroll(child);
+        onRelease();
+    }
 
     @Override
     public void computeScroll() {
@@ -1825,6 +1901,7 @@ public class NarrowViewPager extends ViewGroup {
                 mVelocityTracker.recycle();
                 mVelocityTracker = null;
             }
+            onRelease();
             return false;
         }
 
@@ -1876,7 +1953,7 @@ public class NarrowViewPager extends ViewGroup {
                     mIsUnableToDrag = true;
                     return false;
                 }
-                if (xDiff > mTouchSlop && xDiff * 0.5f > yDiff) {
+                if (xDiff > mTouchSlop && xDiff * 0.5f > yDiff && mDragDistance == 0) {
                     if (DEBUG) Log.v(TAG, "Starting drag!");
                     mIsBeingDragged = true;
                     requestParentDisallowInterceptTouchEvent(true);
@@ -1885,17 +1962,17 @@ public class NarrowViewPager extends ViewGroup {
                             - mTouchSlop;
                     mLastMotionY = y;
                     setScrollingCacheEnabled(true);
-                } else if (yDiff > xDiff) {
+                } else if (yDiff > mTouchSlop) {
                     // The finger has moved enough in the vertical
                     // direction to be counted as a drag...  abort
                     // any attempt to drag horizontally, to work correctly
                     // with children that have scrolling containers.
                     if (DEBUG) Log.v(TAG, "Starting unable to drag!");
-//                        mIsUnableToDrag = true;
+                    mIsUnableToDrag = true;
                     isBeingPushed = mDragDistance < (OFFSET + PADDING) * (float) getHeight() / getWidth();
                     Log.i(TAG, "yDiff > mTouchSlop   mIsBeingDragged = " + mIsBeingDragged);
                 }
-                if (mIsBeingDragged) {
+                if (mIsBeingDragged && mDragDistance == 0) {
                     // Scroll to follow the motion event
                     if (performDrag(x)) {
                         ViewCompat.postInvalidateOnAnimation(this);
@@ -1950,7 +2027,7 @@ public class NarrowViewPager extends ViewGroup {
              * drag mode.
              */
         Log.i("xx", "return mIsBeingDragged  = " + mIsBeingDragged);
-        return mIsBeingDragged || isBeingPushed;
+        return mIsBeingDragged;
     }
 
     @Override
@@ -1995,10 +2072,13 @@ public class NarrowViewPager extends ViewGroup {
                 break;
             }
             case MotionEvent.ACTION_MOVE:
+                if (mDragDistance > 0) {
+                    return false;
+                }
                 final int pointerIndex = MotionEventCompat.findPointerIndex(ev,
                         mActivePointerId);
                 final float y = MotionEventCompat.getY(ev, pointerIndex);
-                if (!mIsBeingDragged && !isBeingPushed) {
+                if (!mIsBeingDragged) {
                     final float x = MotionEventCompat.getX(ev, pointerIndex);
                     final float xDiff = Math.abs(x - mLastMotionX);
                     final float yDiff = Math.abs(y - mLastMotionY);
@@ -2038,7 +2118,7 @@ public class NarrowViewPager extends ViewGroup {
 
                 }
                 // Not else! Note that mIsBeingDragged can be set above.
-                if (mIsBeingDragged) {
+                if (mIsBeingDragged && mDragDistance == 0) {
 
                     // Scroll to follow the motion event
                     final int activePointerIndex = MotionEventCompat.findPointerIndex(ev,
@@ -2048,18 +2128,18 @@ public class NarrowViewPager extends ViewGroup {
 
                 }
 
-                if (isBeingPushed){
-                    if (mOnDragY > 0) {
-                        mDragDistance += y - mOnDragY;
-                        mOnDragY = y;
-                        childScrollUp(mDragDistance);
-//                            mOnDragY = y;
-                    }
-                }
+//                if (isBeingPushed){
+//                    if (mOnDragY > 0) {
+//                        mDragDistance += y - mOnDragY;
+//                        mOnDragY = y;
+//                        childScrollUp(mDragDistance);
+////                            mOnDragY = y;
+//                    }
+//                }
 
                 break;
             case MotionEvent.ACTION_UP:
-                if (mIsBeingDragged) {
+                if (mIsBeingDragged && mDragDistance == 0) {
 
                     mOnDragY = 0;
 
@@ -2087,9 +2167,10 @@ public class NarrowViewPager extends ViewGroup {
                     endDrag();
                     needsInvalidate = mLeftEdge.onRelease() | mRightEdge.onRelease();
                 }
+                onRelease();
                 break;
             case MotionEvent.ACTION_CANCEL:
-                if (mIsBeingDragged) {
+                if (mIsBeingDragged && mDragDistance == 0) {
                     scrollToItem(mCurItem, true, 0, false);
                     mActivePointerId = INVALID_POINTER;
                     endDrag();

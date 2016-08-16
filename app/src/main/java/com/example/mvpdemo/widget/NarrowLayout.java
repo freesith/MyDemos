@@ -18,7 +18,7 @@ public class NarrowLayout extends FrameLayout {
 
     private ViewDragHelper mViewDragHelper;
 
-    private NarrowViewPager mViewPager;
+    private NarrowParentViewPager mViewPager;
 
     public NarrowLayout(Context context) {
         super(context);
@@ -40,23 +40,23 @@ public class NarrowLayout extends FrameLayout {
         super(context, attrs, defStyleAttr, defStyleRes);
         init();
     }
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        boolean handled = false;
-        if (isEnabled()) {
-            handled = mViewDragHelper.shouldInterceptTouchEvent(ev);
-        } else {
-            mViewDragHelper.cancel();
-        }
-        return !handled ? super.onInterceptTouchEvent(ev) : handled;
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        mViewDragHelper.processTouchEvent(event);
-        return true;
-    }
+//
+//    @Override
+//    public boolean onInterceptTouchEvent(MotionEvent ev) {
+//        boolean handled = false;
+//        if (isEnabled()) {
+//            handled = mViewDragHelper.shouldInterceptTouchEvent(ev);
+//        } else {
+//            mViewDragHelper.cancel();
+//        }
+//        return !handled ? super.onInterceptTouchEvent(ev) : handled;
+//    }
+//
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        mViewDragHelper.processTouchEvent(event);
+//        return true;
+//    }
 
     @Override
     public void computeScroll() {
@@ -72,7 +72,7 @@ public class NarrowLayout extends FrameLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mViewPager = (NarrowViewPager) getChildAt(0);
+        mViewPager = (NarrowParentViewPager) getChildAt(0);
     }
 
     class DragCallback extends ViewDragHelper.Callback{
@@ -92,6 +92,12 @@ public class NarrowLayout extends FrameLayout {
         @Override
         public int getViewVerticalDragRange(View child) {
             return getHeight();
+        }
+
+        @Override
+        public void onViewReleased(View releasedChild, float xvel, float yvel) {
+            Log.i("RELEASED","top = " + releasedChild.getTop());
+            super.onViewReleased(releasedChild, xvel, yvel);
         }
     }
 
