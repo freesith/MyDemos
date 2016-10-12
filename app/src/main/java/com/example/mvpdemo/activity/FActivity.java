@@ -1,11 +1,17 @@
 package com.example.mvpdemo.activity;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.mvpdemo.R;
 import com.example.mvpdemo.model.InterestInfo;
@@ -20,23 +26,10 @@ import java.util.List;
  */
 public class FActivity extends BaseActivity {
 
-    private ViewPager mViewPager;
-
-    private List<InterestInfo> mInterestList = new ArrayList<>();
-
-    private static final int TOTAL_COUNT = 100;
-
-    private static final int PAGE_COUNT = 20;
-
-    private List<BubbleContainer> mBubbleContainerList = new ArrayList<>();
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        for (int i = 0; i < TOTAL_COUNT; i ++) {
-            mInterestList.add(new InterestInfo(i,false));
-        }
-    }
+    private EditText mEditText;
+    private TextView mTextView;
+    private ImageView mImageView;
+    private View mLayout;
 
     @Override
     protected int getLayoutResource() {
@@ -45,68 +38,22 @@ public class FActivity extends BaseActivity {
 
     @Override
     protected void initActivityViews() {
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setAdapter(new MyAdapter());
-
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        mEditText = (EditText) findViewById(R.id.edit);
+        mImageView = (ImageView) findViewById(R.id.image);
+        mTextView = (TextView) findViewById(R.id.text);
+        mLayout = findViewById(R.id.layout);
+        mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                for(BubbleContainer container : mBubbleContainerList) {
-                    container.setRun(false);
+            public void onClick(View v) {
+                mLayout.buildDrawingCache();
+                Bitmap drawingCache = mLayout.getDrawingCache();
+                if (drawingCache != null) {
+                    mImageView.setImageBitmap(drawingCache);
                 }
-                mBubbleContainerList.get(position).setRun(true);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
             }
         });
 
+        mLayout.setDrawingCacheEnabled(true);
+
     }
-
-
-
-    class MyAdapter extends PagerAdapter{
-
-
-        @Override
-        public int getCount() {
-            return TOTAL_COUNT / PAGE_COUNT + (TOTAL_COUNT % PAGE_COUNT == 0 ? 0 : 1);
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == object;
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            BubbleContainer bubbleContainer = new BubbleContainer(FActivity.this);
-
-            bubbleContainer.addBuubles(mInterestList.subList(position * PAGE_COUNT, Math.min((position + 1) * PAGE_COUNT, mInterestList.size())));
-            container.addView(bubbleContainer);
-            mBubbleContainerList.add(bubbleContainer);
-            return bubbleContainer;
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            super.destroyItem(container, position, object);
-            ((BubbleContainer)object).setRun(false);
-            ((BubbleContainer)object).removeAllViews();
-            container.removeView((View)object);
-        }
-
-        @Override
-        public int getItemPosition(Object object) {
-            return POSITION_NONE;
-        }
-    }
-
 }

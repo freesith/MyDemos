@@ -18,6 +18,8 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
+    private View viewI;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +33,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+            }
+        });
+
+        viewI = findViewById(R.id.i);
+        viewI.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onViewClick(v);
             }
         });
 
@@ -83,6 +93,15 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.h:
                 startActivity(HActivity.class);
+                break;
+            case R.id.i:
+                startActivity(IActivity.class);
+                break;
+            case R.id.j:
+                startActivity(JActivity.class);
+                break;
+            case R.id.k:
+                startActivity(KActivity.class);
                 break;
         }
     }
