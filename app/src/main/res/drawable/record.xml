@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="66dip"
+        android:height="66dip"
+        android:viewportHeight="132"
+        android:viewportWidth="132"
+    >
+
+
+    <path
+        android:name="button"
+        android:fillColor="#ff0000"
+        android:pathData="
+        M 66, 0
+        L 66, 0
+        A 66, 66, 0, 0, 1, 132, 66
+        L 132, 66
+        A 66, 66, 0, 0, 1, 66, 132
+        L 66, 132
+        A 66, 66, 0 ,0, 1, 0, 66
+        L 0, 66
+        A 66, 66, 0, 0, 1, 66, 0
+        Z
+        "
+        />
+
+</vector>

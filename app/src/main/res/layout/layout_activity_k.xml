@@ -4,8 +4,16 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <TextView
+    <com.example.mvpdemo.sticker.StickerLayout
+        android:id="@+id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="480dip">
+
+    </com.example.mvpdemo.sticker.StickerLayout>
+
+    <Button
         android:id="@+id/text"
+        android:text="按钮"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 

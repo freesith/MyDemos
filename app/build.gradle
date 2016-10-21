@@ -1,17 +1,17 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 22
+    buildToolsVersion "21.1.2"
 
     defaultConfig {
         applicationId "com.example.mvpdemo"
         minSdkVersion 16
-        targetSdkVersion 23
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
 
-        ndk{moduleName "mylibrary"}
+        ndk{moduleName "ARM_ARCH"}
         sourceSets.main{
             jni.srcDirs = []
             jniLibs.srcDir "src/main/libs"
@@ -42,10 +42,10 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile project(':FFmpegAndroid')
-    compile 'com.android.support:appcompat-v7:23.0.1'
-    compile 'com.android.support:design:23.0.1'
-    compile 'com.android.support:recyclerview-v7:23.0.0'
-    compile 'com.android.support:cardview-v7:23.0.0'
+    compile 'com.android.support:appcompat-v7:22.2.+'
+    compile 'com.android.support:design:22.2.+'
+    compile 'com.android.support:recyclerview-v7:22.2.+'
+    compile 'com.android.support:cardview-v7:22.2.+'
 
 //    compile 'com.writingminds:FFmpegAndroid:0.3.2'
 //    compile group: 'org.bytedeco', name: 'javacv', version: '1.1'

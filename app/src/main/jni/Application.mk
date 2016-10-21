@@ -1,2 +1,2 @@
-APP_MODULES := mylibrary
+APP_MODULES := ARM_ARCH
 APP_ABI := all

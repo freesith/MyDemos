@@ -1,9 +1,11 @@
 package com.example.mvpdemo.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
+import android.media.AudioManager;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.os.Build;
@@ -32,6 +34,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -44,8 +47,8 @@ public class IActivity extends BaseActivity implements SurfaceHolder.Callback, M
     private Button mButton;
     private Button mChange;
     private Button mWaterMark;
-    int camWidth = 320;
-    int camHeight = 240;
+    int camWidth = 640;
+    int camHeight = 480;
 
     private SurfaceView mSurfaceView;
     private SurfaceHolder mSurfaceHolder;
@@ -184,6 +187,17 @@ public class IActivity extends BaseActivity implements SurfaceHolder.Callback, M
 
     private void startRecord() {
 
+        AudioManager audioManager = (AudioManager) getApplication().getSystemService(Context.AUDIO_SERVICE);
+        int system = audioManager.getStreamVolume(AudioManager.STREAM_SYSTEM);
+        int music = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        int alarm = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
+        int dtmf = audioManager.getStreamVolume(AudioManager.STREAM_DTMF);
+        int notifu = audioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+        int ring = audioManager.getStreamVolume(AudioManager.STREAM_RING);
+
+        Log.i("FFmpeg","stream: " + system + ",  " + music + ",  " + alarm + ",  " + dtmf + ",  " + notifu + ",  " + ring);
+
+
         Log.i("FFmpeg", "CUP-ABI = " + Build.CPU_ABI);
 
         isRecording = true;
@@ -202,16 +216,15 @@ public class IActivity extends BaseActivity implements SurfaceHolder.Callback, M
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);//before setOutputFormat()
         //设置视频输出的格式和编码
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        CamcorderProfile mProfile = CamcorderProfile.get(CamcorderProfile.QUALITY_TIME_LAPSE_CIF);
         //after setVideoSource(),after setOutFormat()
         mMediaRecorder.setVideoSize(camWidth, camHeight);
         mMediaRecorder.setAudioEncodingBitRate(44100);
 //        if (mProfile.videoBitRate > 2 * 1024 * 1024)
 //            mMediaRecorder.setVideoEncodingBitRate(2 * 1024 * 1024);
 //        else
-            mMediaRecorder.setVideoEncodingBitRate(1024 * 512);
+        mMediaRecorder.setVideoEncodingBitRate(1024 * 1024);
         //after setVideoSource(),after setOutFormat();
-        mMediaRecorder.setVideoFrameRate(24);
+        mMediaRecorder.setVideoFrameRate(20);
         mMediaRecorder.setOrientationHint(mCurrentCamera == 0 ? 90 : 270);
         //after setOutputFormat()
         mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
@@ -309,61 +322,17 @@ public class IActivity extends BaseActivity implements SurfaceHolder.Callback, M
         }
     }
 
-    private void wormUp(final String pic) {
-        Log.i("FFmpeg","wormUp");
-        if (TextUtils.isEmpty(mPath)) {
-            return;
-        }
 
-        String[] cmd = new String[]{"-i",mPath,"-i",pic};
-////        String[] cmd = new String[]{"-i",mPath,"-vf","movie="+file.getAbsolutePath()+" [logo]; [in][logo] overlay=5:5 [out]",mOutPut.getAbsolutePath()};
-        try {
-            final long time = SystemClock.elapsedRealtime();
-            FFmpeg.getInstance(getApplicationContext())
-                    .execute(cmd, new FFmpegExecuteResponseHandler() {
-                        @Override
-                        public void onSuccess(String message) {
-                            Log.i("FFmpeg", "onSuccess       message = " + message + "   cost = " + (SystemClock.elapsedRealtime() - time));
-//                            Intent intent = new Intent(IActivity.this,PlayActivity.class);
-//                            intent.putExtra(PlayActivity.EXTRA_PATH,mOutPut.getAbsolutePath());
-//                            startActivity(intent);
-                        }
-
-                        @Override
-                        public void onProgress(String message) {
-                            Log.i("FFmpeg","onProgress       message = " + message);
-                        }
-
-                        @Override
-                        public void onFailure(String message) {
-                            Log.i("FFmpeg","onFailure       message = " + message);
-                        }
-
-                        @Override
-                        public void onStart() {
-                            Log.i("FFmpeg","onStart");
-                        }
-
-                        @Override
-                        public void onFinish() {
-                            overlay(pic);
-                            Log.i("FFmpeg","onFinish" + "   cost = " + (SystemClock.elapsedRealtime() - time));
-                        }
-                    });
-        } catch (FFmpegCommandAlreadyRunningException e) {
-            e.printStackTrace();
-            Log.i("FFmpeg", "onSuccess       message = " + e.getMessage());
-        }
-
-    }
 
     private void overlay(final String pic ) {
 
 
         Log.i("FFmpeg","overlay");
 
+
 //        String[] cmd = new String[]{"-i",mPath,"-i",pic,"-filter_complex","overlay=5:5","-codec:a","copy","-y",mOutPut.getAbsolutePath()};
-        String[] cmd = new String[]{"-i",mPath,"-vf","movie="+pic+" [logo]; [in][logo] overlay=0:0 [out]",mOutPut.getAbsolutePath()};
+//        String[] cmd = new String[]{"-d","stdout","-loglevel","verbose","-f","s16le","-i",mPath,"-vf","movie="+pic+" [logo]; [in][logo] overlay=0:0 [out]","-preset","ultrafast","-b:v","800k","-g","30","-acodec","libfdk_aac","-ar","44100","-ac","1","-b:a","64k","-f","mp4",mOutPut.getAbsolutePath()};
+        String[] cmd = new String[]{/*"-d","stdout","-f","s16le",*/"-i",mPath,"-i",pic,"-filter_complex","overlay=0:0","-preset","superfast","-b:v","1024k","-g","30","-ar","16000","-ac","1","-b:a","64k","-f","mp4","-movflags","faststart",mOutPut.getAbsolutePath()};
         try {
             final long time = SystemClock.elapsedRealtime();
             FFmpeg.getInstance(getApplicationContext())
@@ -373,29 +342,29 @@ public class IActivity extends BaseActivity implements SurfaceHolder.Callback, M
 
                             Log.i("FFmpeg", "onSuccess       message = " + message + "   cost = " + (SystemClock.elapsedRealtime() - time));
 //                            overlay(pic);
-                            Intent intent = new Intent(IActivity.this,PlayActivity.class);
-                            intent.putExtra(PlayActivity.EXTRA_PATH,mOutPut.getAbsolutePath());
+                            Intent intent = new Intent(IActivity.this, PlayActivity.class);
+                            intent.putExtra(PlayActivity.EXTRA_PATH, mOutPut.getAbsolutePath());
                             startActivity(intent);
                         }
 
                         @Override
                         public void onProgress(String message) {
-                            Log.i("FFmpeg","onProgress       message = " + message);
+                            Log.i("FFmpeg", "onProgress       message = " + message);
                         }
 
                         @Override
                         public void onFailure(String message) {
-                            Log.i("FFmpeg","onFailure       message = " + message);
+                            Log.i("FFmpeg", "onFailure       message = " + message);
                         }
 
                         @Override
                         public void onStart() {
-                            Log.i("FFmpeg","onStart");
+                            Log.i("FFmpeg", "onStart");
                         }
 
                         @Override
                         public void onFinish() {
-                            Log.i("FFmpeg","onFinish" + "   cost = " + (SystemClock.elapsedRealtime() - time));
+                            Log.i("FFmpeg", "onFinish" + "   cost = " + (SystemClock.elapsedRealtime() - time));
                         }
                     });
         } catch (FFmpegCommandAlreadyRunningException e) {
@@ -415,7 +384,7 @@ public class IActivity extends BaseActivity implements SurfaceHolder.Callback, M
         File dir = new File(Environment.getExternalStorageDirectory() + "/" + "mvpDemo/");
         final File file = new File(dir, "water_mark_temp.png");
         if (drawingCache != null) {
-            Bitmap scaledBitmap = Bitmap.createScaledBitmap(drawingCache, 240, 320, false);
+            Bitmap scaledBitmap = Bitmap.createScaledBitmap(drawingCache, camHeight, camWidth, false);
             saveBitmap(scaledBitmap, file, true);
         }
 
@@ -508,12 +477,12 @@ public class IActivity extends BaseActivity implements SurfaceHolder.Callback, M
         parameters.setPreviewFormat(ImageFormat.YV12);
         parameters.set("orientation", "portrait");
 //        parameters.set("orientation", "landscape");
-        parameters.setPictureSize(320, 240);
-        parameters.setPreviewSize(camWidth, camHeight);
+        parameters.setPictureSize(camWidth, camHeight);
+        parameters.setPreviewSize(2048, 1536);
         parameters.setRotation(90);
         //这两个属性 如果这两个属性设置的和真实手机的不一样时，就会报错
         mCamera.setParameters(parameters);
-        mCamera.autoFocus(this);
+        mCamera.autoFocus(null);
         mCamera.startPreview();
 
     }

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="66dip"
+        android:height="66dip"
+        android:viewportHeight="132"
+        android:viewportWidth="132"
+    >
+
+    <path
+        android:name="button"
+        android:fillColor="#ff0000"
+        android:pathData="
+        M 36, 16
+        L 96, 16
+        A 20, 20, 0, 0, 1, 116, 36
+        L 116, 96
+        A 20, 20, 0, 0, 1, 96, 116
+        L 36, 116
+        A 20, 20, 0 ,0, 1, 16, 96
+        L 16, 36
+        A 20, 20, 0, 0, 1, 36, 16
+        Z
+        "
+        />
+
+</vector>

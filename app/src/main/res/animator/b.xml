@@ -15,7 +15,6 @@
         android:propertyName="fillColor"
         android:valueTo="#0000ff"
         android:valueFrom="#ffffff"
-        android:valueType="colorType"
         />
 
 </set>

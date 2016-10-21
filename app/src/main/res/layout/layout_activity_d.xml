@@ -25,4 +25,20 @@
         android:layout_width="50dip"
         android:layout_height="50dip"/>
 
+    <com.example.mvpdemo.widget.ColorEditText
+        android:id="@+id/edit"
+        android:text="hehe"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:layout_margin="30dip"
+        android:id="@+id/record"
+        android:src="@drawable/record"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+
+
 </LinearLayout>
